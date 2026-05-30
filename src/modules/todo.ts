@@ -1,81 +1,84 @@
-import { App, MarkdownView, TFile } from "obsidian";
-import { NexusSettings, KanbanCard } from "../types";
+import { KanbanData, KanbanCard } from "../types";
+import { KanbanSync } from "../kanban-sync";
 import { InputModal } from "./input-modal";
+import { App } from "obsidian";
 
-export function renderTodo(el: HTMLElement, settings: NexusSettings, app: App) {
+export function renderTodo(
+  el: HTMLElement,
+  data: KanbanData,
+  sync: KanbanSync,
+  app: App,
+  cleanupFns: Array<() => void>
+) {
   el.empty();
   el.addClass("nexus-todo");
 
   const header = el.createDiv({ cls: "nexus-todo-header" });
-  header.createEl("h3", { text: "📋 待办事项" });
+  header.createEl("h3", { text: "待办" });
 
-  // Get all unchecked cards from kanban
-  const kanbanFile = app.vault.getAbstractFileByPath(settings.kanbanFile + ".md");
-  if (!(kanbanFile instanceof TFile)) {
-    el.createDiv({ text: "未找到看板文件", cls: "nexus-todo-empty" });
+  // Add task button
+  const addBtn = header.createEl("button", {
+    cls: "nexus-todo-add-btn",
+    text: "+ 添加任务",
+  });
+  addBtn.addEventListener("click", () => {
+    new InputModal(app, "新建任务", "输入任务内容", async (title) => {
+      const newCard: KanbanCard = {
+        id: `card-${Date.now().toString(36)}`,
+        title,
+        type: "task",
+        body: "",
+        tags: [],
+        dueDate: "",
+        checked: false,
+        createdAt: new Date().toISOString().slice(0, 10),
+        completedAt: "",
+        tasks: [],
+      };
+      // Add to first column (待做)
+      await sync.addCard(data.columns[0]?.name || "待做", newCard);
+    }).open();
+  });
+
+  const listEl = el.createDiv({ cls: "nexus-todo-list" });
+
+  // Collect all task cards from all columns
+  const taskCards = data.columns.flatMap((col) =>
+    col.cards
+      .filter((c) => c.type === "task")
+      .map((c) => ({ ...c, columnName: col.name }))
+  );
+
+  if (taskCards.length === 0) {
+    listEl.createDiv({
+      cls: "nexus-todo-empty",
+      text: "暂无任务。点击上方「添加任务」创建。",
+    });
     return;
   }
 
-  app.vault.read(kanbanFile).then(content => {
-    const cards = parseKanbanCards(content);
-    const unchecked = cards.filter(c => !c.checked);
+  for (const card of taskCards) {
+    const itemEl = listEl.createDiv({ cls: "nexus-todo-item" });
 
-    if (unchecked.length === 0) {
-      el.createDiv({ text: "🎉 所有任务已完成！", cls: "nexus-todo-empty" });
-      return;
-    }
+    const checkbox = itemEl.createEl("input", {
+      type: "checkbox",
+      cls: "nexus-todo-checkbox",
+    }) as HTMLInputElement;
+    checkbox.checked = card.checked;
+    checkbox.addEventListener("change", async () => {
+      await sync.toggleCard(card.id, checkbox.checked);
+    });
 
-    const list = el.createDiv({ cls: "nexus-todo-list" });
-    for (const card of unchecked) {
-      const item = list.createDiv({ cls: "nexus-todo-item" });
-      const checkbox = item.createEl("input", { type: "checkbox" });
-      checkbox.addEventListener("change", () => {
-        markCardComplete(kanbanFile, card, app, settings);
-        item.addClass("nexus-todo-completed");
-        setTimeout(() => item.remove(), 300);
-      });
-      item.createSpan({ text: card.title, cls: "nexus-todo-title" });
-      if (card.dueDate) {
-        item.createSpan({ text: card.dueDate, cls: "nexus-todo-due" });
-      }
-    }
-  });
-}
+    const label = itemEl.createEl("span", {
+      text: card.title,
+      cls: "nexus-todo-label",
+    });
+    if (card.checked) label.addClass("nexus-todo-label--done");
 
-function parseKanbanCards(content: string): KanbanCard[] {
-  const cards: KanbanCard[] = [];
-  const lines = content.split("\n");
-  let currentCard: Partial<KanbanCard> | null = null;
-
-  for (const line of lines) {
-    if (line.startsWith("- [x] ") || line.startsWith("- [ ] ")) {
-      if (currentCard) cards.push(currentCard as KanbanCard);
-      currentCard = {
-        title: line.replace(/^- \[[x ]\] /, ""),
-        checked: line.startsWith("- [x] "),
-      };
-    }
+    // Show column name as context
+    itemEl.createEl("span", {
+      text: card.columnName,
+      cls: "nexus-todo-context",
+    });
   }
-  if (currentCard) cards.push(currentCard as KanbanCard);
-  return cards;
-}
-
-async function markCardComplete(file: TFile, card: KanbanCard, app: App, settings: NexusSettings) {
-  const content = await app.vault.read(file);
-  const updated = content.replace(
-    `- [ ] ${card.title}`,
-    `- [x] ${card.title}`
-  );
-  await app.vault.modify(file, updated);
-
-  // Update activity log
-  const today = new Date().toISOString().slice(0, 10);
-  if (!settings.activityLog[today]) {
-    settings.activityLog[today] = { cardComplete: 0, todoCheck: 0, cardCreate: 0 };
-  }
-  settings.activityLog[today].todoCheck++;
-  app.vault.adapter.write(
-    app.vault.configDir + "/plugins/nexus/data.json",
-    JSON.stringify(settings, null, 2)
-  );
 }
