@@ -1,43 +1,88 @@
-/* ===== VARIABLES ===== */
-.nexus-container {
-  --nx-bg: var(--background-primary);
-  --nx-bg-alt: var(--background-secondary);
-  --nx-text: var(--text-normal);
-  --nx-text-muted: var(--text-muted);
-  --nx-accent: var(--interactive-accent);
-  --nx-accent-light: var(--interactive-accent-hover);
-  --nx-border: var(--background-modifier-border);
-  --nx-radius: 8px;
-  --nx-shadow: 0 2px 8px rgba(0,0,0,0.08);
+/* =================================================================
+   Nexus Plugin — Multi-Theme Design System
+   ================================================================= */
 
-  /* Heatmap */
-  --nx-heat-0: #ebedf0;
-  --nx-heat-1: #9be9a8;
-  --nx-heat-2: #40c463;
-  --nx-heat-3: #30a14e;
-  --nx-heat-4: #216e39;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&family=JetBrains+Mono:wght@400;500&display=swap');
 
-  font-family: var(--font-interface);
+/* ===== THEME VARIABLES ===== */
+
+/* --- Nordic (default) --- */
+.nexus-root[data-theme="nordic"] {
+  --nx-bg: #F8FAFC;
+  --nx-bg-card: #FFFFFF;
+  --nx-bg-card-hover: #F1F5F9;
+  --nx-bg-sidebar: #F1F5F9;
+  --nx-border: #E2E8F0;
+  --nx-text: #1e293b;
+  --nx-text-muted: #64748b;
+  --nx-accent: #3b82f6;
+  --nx-accent-light: #0ea5e9;
+  --nx-radius: 10px;
+  --nx-shadow: 0 1px 3px rgba(0,0,0,0.06);
+  --nx-font: 'DM Sans', 'Noto Sans SC', var(--font-interface);
+}
+
+.theme-dark .nexus-root[data-theme="nordic"] {
+  --nx-bg: #0f172a;
+  --nx-bg-card: #1e293b;
+  --nx-bg-card-hover: #263348;
+  --nx-bg-sidebar: #1e293b;
+  --nx-border: #334155;
+  --nx-text: #e2e8f0;
+  --nx-text-muted: #94a3b8;
+  --nx-accent: #60a5fa;
+  --nx-accent-light: #38bdf8;
+  --nx-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* --- Aurora --- */
+.nexus-root[data-theme="aurora"] {
+  --nx-bg: #f3f0ff;
+  --nx-bg-card: rgba(255,255,255,0.7);
+  --nx-bg-card-hover: rgba(255,255,255,0.85);
+  --nx-bg-sidebar: rgba(139,92,246,0.06);
+  --nx-border: rgba(139,92,246,0.12);
+  --nx-text: #1e293b;
+  --nx-text-muted: #475569;
+  --nx-accent: #7c3aed;
+  --nx-accent-light: #6366f1;
+  --nx-radius: 14px;
+  --nx-shadow: 0 2px 12px rgba(139,92,246,0.06);
+  --nx-font: 'DM Sans', 'Noto Sans SC', var(--font-interface);
+}
+
+.theme-dark .nexus-root[data-theme="aurora"] {
+  --nx-bg: #0f0a1e;
+  --nx-bg-card: rgba(255,255,255,0.06);
+  --nx-bg-card-hover: rgba(255,255,255,0.10);
+  --nx-bg-sidebar: rgba(139,92,246,0.05);
+  --nx-border: rgba(255,255,255,0.08);
+  --nx-text: #e8f0f8;
+  --nx-text-muted: #94a8c0;
+  --nx-accent: #a78bfa;
+  --nx-accent-light: #6366f1;
+  --nx-shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+/* ===== ROOT LAYOUT ===== */
+.nexus-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: auto;
+  font-family: var(--nx-font);
+  background: var(--nx-bg);
   color: var(--nx-text);
   padding: 16px;
 }
 
 /* ===== BANNER ===== */
-.nexus-banner {
-  border-radius: var(--nx-radius);
-  min-height: 120px;
-  margin-bottom: 16px;
-  display: flex;
-  align-items: flex-end;
-  position: relative;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--nx-accent), var(--nx-accent-light));
-}
+/* Banner styles defined below in ROOT LAYOUT section */
 
 .nexus-banner--has-image {
   cursor: grab;
   background-size: cover;
-  background-position: center;
+  user-select: none;
 }
 
 .nexus-banner-overlay {
@@ -54,25 +99,225 @@
   text-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
 
-/* ===== GRID ===== */
-.nexus-grid {
-  flex: 1;
-  min-height: 0;
-}
-
-.nexus-cell {
-  background: var(--nx-bg-alt);
-  border-radius: var(--nx-radius);
-  padding: 12px;
-  box-shadow: var(--nx-shadow);
-  overflow: visible;
+/* ===== ROOT LAYOUT ===== */
+.nexus-root {
   display: flex;
   flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  font-family: var(--nx-font);
+  background: var(--nx-bg);
+  color: var(--nx-text);
+}
+
+/* ===== BANNER ===== */
+.nexus-banner {
+  border-radius: var(--nx-radius);
+  min-height: 120px;
+  margin: 16px 16px 0;
+  display: flex;
+  align-items: flex-end;
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(135deg, var(--nx-accent), var(--nx-accent-light));
+  flex-shrink: 0;
+}
+
+/* Banner settings button */
+.nexus-banner-settings-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  background: rgba(0, 0, 0, 0.4);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 14px;
+  opacity: 0;
+  transition: opacity 0.2s;
+  z-index: 10;
+}
+
+.nexus-banner:hover .nexus-banner-settings-btn {
+  opacity: 1;
+}
+
+.nexus-banner-settings-btn--active {
+  opacity: 1 !important;
+  background: rgba(0, 0, 0, 0.7);
+}
+
+/* Banner settings panel */
+.nexus-banner-settings {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 260px;
+  background: rgba(0, 0, 0, 0.85);
+  backdrop-filter: blur(8px);
+  border-radius: 0 0 0 8px;
+  padding: 0;
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+  z-index: 20;
+  color: #e2e8f0;
+}
+
+.nexus-banner-settings--open {
+  max-height: 300px;
+  padding: 12px;
+}
+
+.nexus-banner-info {
+  padding: 4px 0 8px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+  margin-bottom: 8px;
+}
+
+.nexus-banner-info-text {
+  font-size: 0.75em;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.nexus-banner-ctrl {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.nexus-banner-ctrl label {
+  font-size: 0.75em;
+  color: rgba(255, 255, 255, 0.7);
+  width: 65px;
+  flex-shrink: 0;
+}
+
+.nexus-banner-ctrl input[type="range"] {
+  flex: 1;
+  height: 4px;
+  accent-color: var(--nx-accent);
+}
+
+.nexus-banner-ctrl span {
+  font-size: 0.7em;
+  color: rgba(255, 255, 255, 0.5);
+  width: 36px;
+  text-align: right;
+}
+
+.nexus-banner-reset-btn {
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  color: #e2e8f0;
+  padding: 3px 10px;
+  font-size: 0.75em;
+  cursor: pointer;
+}
+
+.nexus-banner-reset-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.nexus-banner-btn-row {
+  display: flex;
+  gap: 8px;
+  padding-top: 8px;
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.nexus-banner-save-btn {
+  flex: 1;
+  background: var(--nx-accent);
+  border: none;
+  border-radius: 4px;
+  color: #fff;
+  padding: 3px 10px;
+  font-size: 0.75em;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.nexus-banner-save-btn:hover {
+  opacity: 0.85;
+}
+
+/* ===== BODY (two-column) ===== */
+.nexus-body {
+  display: flex;
+  gap: 16px;
+  padding: 12px 16px 16px;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.nexus-left-sidebar {
+  width: 240px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.nexus-main {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+/* ===== SECTIONS (right side) ===== */
+.nexus-section {
+  background: var(--nx-bg-card);
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  box-shadow: var(--nx-shadow);
+}
+
+.nexus-section-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--nx-border);
+}
+
+.nexus-section-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nexus-section-dot--red { background: #ef4444; }
+.nexus-section-dot--yellow { background: #f59e0b; }
+.nexus-section-dot--blue { background: #3b82f6; }
+.nexus-section-dot--green { background: #10b981; }
+
+.nexus-section-title {
+  font-size: 0.9em;
+  font-weight: 600;
+}
+
+.nexus-section-body {
+  padding: 8px;
 }
 
 /* ===== KANBAN ===== */
 .nexus-kanban {
-  flex: 1;
+  padding: 12px;
   display: flex;
   flex-direction: column;
 }
@@ -86,32 +331,46 @@
 
 .nexus-kanban-header h3 {
   margin: 0;
+  font-size: 1em;
+  font-weight: 600;
 }
 
-.nexus-kanban-add {
-  width: 28px;
-  height: 28px;
-  border-radius: 50%;
-  border: none;
-  background: var(--nx-accent);
-  color: #fff;
-  font-size: 1.2em;
+.nexus-kanban-add-section {
+  background: none;
+  border: 1px dashed var(--nx-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: var(--nx-text-muted);
   cursor: pointer;
+  font-size: 0.8em;
+}
+
+.nexus-kanban-add-section:hover {
+  border-color: var(--nx-accent);
+  color: var(--nx-accent);
 }
 
 .nexus-kanban-board {
   display: flex;
-  gap: 8px;
+  gap: 10px;
   flex: 1;
   overflow-x: auto;
+  min-height: 0;
 }
 
 .nexus-kanban-column {
+  min-width: 180px;
   flex: 1;
-  min-width: 120px;
-  background: var(--nx-bg);
-  border-radius: var(--nx-radius);
+  display: flex;
+  flex-direction: column;
+  border-top: 3px solid var(--col-color, var(--nx-accent));
+  border-radius: 0 0 var(--nx-radius) var(--nx-radius);
+  background: var(--nx-bg-sidebar);
   padding: 8px;
+}
+
+.nexus-kanban-column--drag-over {
+  background: color-mix(in srgb, var(--nx-accent) 8%, var(--nx-bg-sidebar));
 }
 
 .nexus-kanban-col-header {
@@ -121,170 +380,373 @@
   margin-bottom: 8px;
 }
 
-.nexus-kanban-col-title {
+.nexus-kanban-col-name {
   font-weight: 600;
-  font-size: 0.9em;
+  font-size: 0.85em;
 }
 
 .nexus-kanban-col-count {
-  font-size: 0.8em;
+  font-size: 0.75em;
   color: var(--nx-text-muted);
-  background: var(--nx-bg-alt);
-  padding: 2px 6px;
+  background: var(--nx-bg-card);
   border-radius: 10px;
+  padding: 1px 7px;
 }
 
 .nexus-kanban-cards {
+  flex: 1;
+  overflow-y: auto;
   display: flex;
   flex-direction: column;
   gap: 6px;
 }
 
 .nexus-kanban-card {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 8px;
-  background: var(--nx-bg-alt);
-  border-radius: 6px;
-  cursor: pointer;
-  transition: transform 0.15s, box-shadow 0.15s;
+  background: var(--nx-bg-card);
+  border: 1px solid var(--nx-border);
+  border-left: 3px solid var(--col-color, var(--nx-accent));
+  border-radius: 8px;
+  padding: 8px 10px;
+  cursor: grab;
+  transition: box-shadow 0.15s;
 }
 
 .nexus-kanban-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  box-shadow: var(--nx-shadow);
 }
 
+.nexus-kanban-card--dragging {
+  opacity: 0.4;
+}
+
+.nexus-kanban-card--task {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+}
+
+/* Completed column cards - dimmed with strikethrough */
 .nexus-kanban-card--done {
-  opacity: 0.6;
+  opacity: 0.45;
 }
 
 .nexus-kanban-card--done .nexus-kanban-card-title {
   text-decoration: line-through;
+  color: var(--nx-text-muted);
+}
+
+.nexus-kanban-card-checkbox {
+  accent-color: var(--nx-accent);
+  cursor: pointer;
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
+.nexus-kanban-card-title--done {
+  text-decoration: line-through;
+  color: var(--nx-text-muted);
+}
+
+.nexus-kanban-card-title-row {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 4px;
+  flex: 1;
+  min-width: 0;
 }
 
 .nexus-kanban-card-title {
+  font-size: 0.85em;
+  font-weight: 500;
   flex: 1;
-  font-size: 0.9em;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.nexus-kanban-card-delete {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--nx-text-muted);
+  cursor: pointer;
+  font-size: 1em;
+  line-height: 1;
+  padding: 0 2px;
+  border-radius: 4px;
+  flex-shrink: 0;
+  transition: color 0.15s, background 0.15s;
+}
+
+.nexus-kanban-card:hover .nexus-kanban-card-delete {
+  display: block;
+}
+
+.nexus-kanban-card-delete:hover {
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.1);
+}
+
+.nexus-kanban-card-tags {
+  display: flex;
+  gap: 4px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+}
+
+.nexus-kanban-card-tag {
+  font-size: 0.7em;
+  background: color-mix(in srgb, var(--nx-accent) 12%, transparent);
+  color: var(--nx-accent);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+.nexus-kanban-card-due {
+  font-size: 0.7em;
+  color: var(--nx-text-muted);
+  margin-top: 4px;
+}
+
+.nexus-kanban-add-card {
+  text-align: center;
+  padding: 6px;
+  color: var(--nx-text-muted);
+  font-size: 0.8em;
+  cursor: pointer;
+  border-radius: 6px;
+  margin-top: 4px;
+}
+
+.nexus-kanban-add-card:hover {
+  background: var(--nx-bg-card-hover);
+  color: var(--nx-accent);
 }
 
 /* ===== TODO ===== */
 .nexus-todo {
-  flex: 1;
+  padding: 12px;
   display: flex;
   flex-direction: column;
 }
 
 .nexus-todo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   margin-bottom: 12px;
 }
 
 .nexus-todo-header h3 {
   margin: 0;
+  font-size: 1em;
+  font-weight: 600;
 }
 
 .nexus-todo-list {
   flex: 1;
   overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.nexus-todo-empty {
+  color: var(--nx-text-muted);
+  font-size: 0.85em;
+  text-align: center;
+  padding: 20px;
 }
 
 .nexus-todo-item {
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid var(--nx-border);
+  padding: 6px 8px;
+  border-radius: 6px;
+  transition: background 0.15s;
 }
 
-.nexus-todo-title {
+.nexus-todo-item:hover {
+  background: var(--nx-bg-card-hover);
+}
+
+.nexus-todo-checkbox {
+  accent-color: var(--nx-accent);
+  cursor: pointer;
+}
+
+.nexus-todo-label {
+  font-size: 0.85em;
   flex: 1;
-  font-size: 0.9em;
 }
 
-.nexus-todo-due {
-  font-size: 0.8em;
-  color: var(--nx-text-muted);
-}
-
-.nexus-todo-completed {
-  opacity: 0.5;
+.nexus-todo-label--done {
   text-decoration: line-through;
-}
-
-.nexus-todo-empty {
-  text-align: center;
   color: var(--nx-text-muted);
-  padding: 20px;
 }
 
-/* ===== HEATMAP ===== */
+.nexus-todo-context {
+  font-size: 0.7em;
+  color: var(--nx-text-muted);
+  background: var(--nx-bg-sidebar);
+  border-radius: 4px;
+  padding: 1px 6px;
+}
+
+/* ===== HEATMAP (table calendar) ===== */
 .nexus-heatmap {
-  flex: 1;
+  padding: 14px;
   display: flex;
   flex-direction: column;
-}
-
-.nexus-heatmap-header {
-  margin-bottom: 12px;
+  box-sizing: border-box;
 }
 
 .nexus-heatmap-header h3 {
-  margin: 0;
-}
-
-.nexus-heatmap-grid {
-  flex: 1;
-  overflow-x: auto;
-}
-
-.nexus-heatmap-table {
-  border-collapse: collapse;
-  font-size: 0.75em;
-}
-
-.nexus-heatmap-table td {
-  width: 14px;
-  height: 14px;
-  padding: 0;
-}
-
-.nexus-heatmap-cell {
-  border-radius: 2px;
-  outline: 1px solid rgba(0,0,0,0.06);
-}
-
-.nexus-heatmap-month {
+  margin: 0 0 8px;
   font-size: 0.8em;
+  font-weight: 400;
   color: var(--nx-text-muted);
+}
+
+.nexus-heatmap-nav {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.nexus-heatmap-arrow {
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 18px;
+  color: var(--nx-text-muted);
+  transition: background 0.15s, color 0.15s;
+  user-select: none;
+}
+
+.nexus-heatmap-arrow:hover {
+  background: var(--nx-bg-card-hover);
+  color: var(--nx-text);
+}
+
+.nexus-heatmap-arrow--disabled {
+  opacity: 0.3;
+  pointer-events: none;
+}
+
+.nexus-heatmap-month-name {
+  font-size: 0.85em;
+  font-weight: 600;
+  color: var(--nx-text);
+  min-width: 80px;
   text-align: center;
 }
 
-.nexus-heatmap-day-label {
-  font-size: 0.8em;
-  color: var(--nx-text-muted);
-  text-align: right;
-  padding-right: 4px !important;
+/* Table layout */
+.nexus-heatmap-table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 3px;
 }
 
+.nexus-heatmap-th {
+  font-size: 0.65em;
+  font-weight: 500;
+  color: var(--nx-text-muted);
+  text-align: center;
+  padding: 0 0 4px;
+}
+
+.nexus-heatmap-td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+.nexus-heatmap-td .nexus-heatmap-cell {
+  width: 100%;
+  aspect-ratio: 1;
+  max-width: 24px;
+  margin: 0 auto;
+}
+
+/* Cell base */
+.nexus-heatmap-cell {
+  border-radius: 4px;
+  position: relative;
+  cursor: default;
+}
+
+.nexus-heatmap-cell:hover {
+  outline: 2px solid var(--nx-text-muted);
+  outline-offset: 1px;
+}
+
+/* Colors */
+.nexus-heatmap-cell--level-0 { background: #ebedf0; }
+.theme-dark .nexus-heatmap-cell--level-0 { background: #161b22; }
+.nexus-heatmap-cell--level-1 { background: #9be9a8; }
+.theme-dark .nexus-heatmap-cell--level-1 { background: #0e4429; }
+.nexus-heatmap-cell--level-2 { background: #40c463; }
+.theme-dark .nexus-heatmap-cell--level-2 { background: #006d32; }
+.nexus-heatmap-cell--level-3 { background: #30a14e; }
+.theme-dark .nexus-heatmap-cell--level-3 { background: #26a641; }
+.nexus-heatmap-cell--level-4 { background: #216e39; }
+.theme-dark .nexus-heatmap-cell--level-4 { background: #39d353; }
+
+/* Tooltip */
+.nexus-heatmap-tip {
+  display: none;
+  position: absolute;
+  bottom: calc(100% + 6px);
+  left: 50%;
+  transform: translateX(-50%);
+  background: #24292f;
+  color: #fff;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.65em;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.nexus-heatmap-tip::after {
+  content: "";
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 4px solid transparent;
+  border-top-color: #24292f;
+}
+
+.nexus-heatmap-cell:hover .nexus-heatmap-tip {
+  display: block;
+}
+
+/* Legend */
 .nexus-heatmap-legend {
   display: flex;
   align-items: center;
-  gap: 4px;
-  margin-top: 8px;
-  font-size: 0.8em;
+  gap: 3px;
+  margin-top: 12px;
+  font-size: 0.6em;
   color: var(--nx-text-muted);
+  justify-content: flex-end;
 }
 
-.nexus-heatmap-legend div {
-  width: 14px;
-  height: 14px;
-  border-radius: 2px;
+.nexus-heatmap-legend .nexus-heatmap-cell {
+  width: 12px;
+  height: 12px;
 }
-
-/* ===== BOOKSHELF ===== */
 .nexus-bookshelf {
-  flex: 1;
+  padding: 12px;
   display: flex;
   flex-direction: column;
 }
@@ -295,95 +757,562 @@
 
 .nexus-bookshelf-header h3 {
   margin: 0;
+  font-size: 1em;
+  font-weight: 600;
+}
+
+.nexus-bookshelf-empty {
+  color: var(--nx-text-muted);
+  font-size: 0.85em;
+  text-align: center;
+  padding: 20px;
 }
 
 .nexus-bookshelf-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
-  gap: 12px;
   flex: 1;
   overflow-y: auto;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  align-content: start;
 }
 
 .nexus-book-card {
   cursor: pointer;
-  text-align: center;
-  transition: transform 0.2s;
+  border-radius: 8px;
+  overflow: hidden;
+  transition: transform 0.15s, box-shadow 0.15s;
+  border: 1px solid var(--nx-border);
 }
 
 .nexus-book-card:hover {
-  transform: translateY(-4px);
+  transform: translateY(-2px);
+  box-shadow: var(--nx-shadow);
 }
 
 .nexus-book-cover {
-  width: 100%;
-  height: 140px;
-  object-fit: cover;
-  border-radius: 4px;
-  box-shadow: 0 2px 6px rgba(0,0,0,0.15);
-}
-
-.nexus-book-cover-placeholder {
-  width: 100%;
-  height: 140px;
+  aspect-ratio: 2/3;
+  background: var(--nx-bg-sidebar);
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--nx-bg);
-  border-radius: 4px;
+  overflow: hidden;
+}
+
+.nexus-book-cover-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.nexus-book-cover-placeholder {
   font-size: 2em;
 }
 
 .nexus-book-title {
-  margin-top: 6px;
-  font-size: 0.85em;
-  color: var(--nx-text);
+  font-size: 0.75em;
+  font-weight: 500;
+  padding: 6px 8px 2px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
 
-/* ===== MODAL ===== */
-.nexus-modal-input {
-  width: 100%;
-  padding: 8px 12px;
-  border: 1px solid var(--nx-border);
-  border-radius: 6px;
-  background: var(--nx-bg);
-  color: var(--nx-text);
-  font-size: 0.95em;
+.nexus-book-status {
+  font-size: 0.65em;
+  color: var(--nx-text-muted);
+  padding: 2px 8px 6px;
 }
 
-.nexus-modal-input:focus {
-  outline: none;
-  border-color: var(--nx-accent);
-}
-
-/* ===== FILE PICKER ===== */
-.nexus-file-picker-item {
+/* ===== INLINE EPUB READER ===== */
+.nexus-epub-standalone {
   display: flex;
   flex-direction: column;
-  gap: 2px;
-  padding: 8px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.nexus-epub-reader {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.nexus-epub-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--nx-border);
+  background: var(--nx-bg-card);
+  flex-wrap: wrap;
+}
+
+.nexus-epub-back-btn {
+  background: none;
+  border: 1px solid var(--nx-border);
+  border-radius: 6px;
+  padding: 4px 10px;
+  color: var(--nx-text);
   cursor: pointer;
-  border-radius: 4px;
+  font-size: 0.8em;
 }
 
-.nexus-file-picker-item:hover {
-  background: var(--nx-bg-alt);
+.nexus-epub-back-btn:hover {
+  border-color: var(--nx-accent);
+  color: var(--nx-accent);
 }
 
-.nexus-file-picker-name {
-  font-weight: 500;
+.nexus-epub-title {
+  font-weight: 600;
+  font-size: 0.9em;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
-.nexus-file-picker-path {
+.nexus-epub-font-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 0.8em;
   color: var(--nx-text-muted);
 }
 
+.nexus-epub-font-group input[type="range"] {
+  width: 80px;
+}
+
+.nexus-epub-stats {
+  display: flex;
+  gap: 12px;
+  padding: 6px 12px;
+  font-size: 0.75em;
+  color: var(--nx-text-muted);
+  border-bottom: 1px solid var(--nx-border);
+  background: var(--nx-bg-sidebar);
+}
+
+.nexus-epub-content-area {
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+  position: relative;
+}
+
+.nexus-epub-nav {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  font-size: 48px;
+  color: var(--nx-text-muted);
+  cursor: pointer;
+  padding: 20px 12px;
+  user-select: none;
+  opacity: 0.3;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.nexus-epub-nav:hover {
+  opacity: 1;
+  color: var(--nx-accent);
+}
+
+.nexus-epub-nav-prev {
+  left: 0;
+}
+
+.nexus-epub-nav-next {
+  right: 0;
+}
+
+/* ===== BALANCE ===== */
+.nexus-balance-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--nx-border);
+}
+
+.nexus-balance-body {
+  padding: 14px;
+}
+
+.nexus-balance-empty {
+  color: var(--nx-text-muted);
+  font-size: 0.8em;
+  text-align: center;
+  padding: 12px;
+}
+
+.nexus-balance-loading {
+  color: var(--nx-text-muted);
+  font-size: 0.8em;
+  text-align: center;
+  padding: 12px;
+}
+
+.nexus-balance-main {
+  margin-bottom: 10px;
+}
+
+.nexus-balance-amount {
+  font-size: 1.8em;
+  font-weight: 700;
+  color: var(--nx-text);
+}
+
+.nexus-balance-bar-bg {
+  width: 100%;
+  height: 6px;
+  background: var(--nx-border);
+  border-radius: 3px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+.nexus-balance-bar {
+  height: 100%;
+  background: var(--nx-accent);
+  border-radius: 3px;
+  transition: width 0.3s;
+}
+
+.nexus-balance-detail {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.nexus-balance-tag {
+  font-size: 0.75em;
+  color: var(--nx-text-muted);
+  background: var(--nx-bg-sidebar);
+  padding: 2px 8px;
+  border-radius: 4px;
+}
+
+.nexus-balance-status {
+  font-size: 0.75em;
+}
+
+.nexus-balance-ok {
+  color: #10b981;
+}
+
+.nexus-balance-off {
+  color: #ef4444;
+}
+
+/* ===== SIDEBAR (Quick Links + Recent) ===== */
+.nexus-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  height: fit-content;
+}
+
+.nexus-sidebar-section {
+  background: var(--nx-bg-card);
+  border: 1px solid var(--nx-border);
+  border-radius: var(--nx-radius);
+  box-shadow: var(--nx-shadow);
+  padding: 0;
+  overflow: hidden;
+}
+
+.nexus-sidebar-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  font-size: 0.9em;
+  font-weight: 600;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--nx-border);
+}
+
+.nexus-sidebar-title::before {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.nexus-sidebar-section:nth-child(1) .nexus-sidebar-title::before {
+  background: #3b82f6;
+}
+
+.nexus-sidebar-section:nth-child(2) .nexus-sidebar-title::before {
+  background: #f59e0b;
+}
+
+.nexus-sidebar-title--balance::before {
+  background: #10b981;
+}
+
+.nexus-sidebar-add-btn {
+  text-align: center;
+  padding: 8px;
+  color: var(--nx-text-muted);
+  font-size: 0.8em;
+  cursor: pointer;
+  border-top: 1px solid var(--nx-border);
+}
+
+.nexus-sidebar-add-btn:hover {
+  color: var(--nx-accent);
+  background: var(--nx-bg-card-hover);
+}
+
+.nexus-sidebar-empty {
+  color: var(--nx-text-muted);
+  font-size: 0.8em;
+  text-align: center;
+  padding: 16px;
+}
+
+/* Quick Links */
+.nexus-quick-links {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.nexus-quick-link-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 6px 14px;
+  transition: background 0.15s;
+}
+
+.nexus-quick-link-item:hover {
+  background: var(--nx-bg-card-hover);
+}
+
+.nexus-quick-link-left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.nexus-quick-link-icon {
+  font-size: 0.9em;
+  flex-shrink: 0;
+}
+
+.nexus-quick-link-name {
+  font-size: 0.85em;
+  color: var(--nx-text);
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.nexus-quick-link-name:hover {
+  color: var(--nx-accent);
+}
+
+.nexus-quick-link-delete {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--nx-text-muted);
+  cursor: pointer;
+  font-size: 0.9em;
+  padding: 0 2px;
+  border-radius: 4px;
+}
+
+.nexus-quick-link-item:hover .nexus-quick-link-delete {
+  display: block;
+}
+
+.nexus-quick-link-delete:hover {
+  color: #ef4444;
+}
+
+/* Recently Edited */
+.nexus-recent-list {
+  display: flex;
+  flex-direction: column;
+  padding: 4px 0;
+}
+
+.nexus-recent-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 5px 14px;
+  transition: background 0.15s;
+  cursor: pointer;
+}
+
+.nexus-recent-item:hover {
+  background: var(--nx-bg-card-hover);
+}
+
+.nexus-recent-name {
+  font-size: 0.85em;
+  color: var(--nx-text);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+  min-width: 0;
+}
+
+.nexus-recent-name:hover {
+  color: var(--nx-accent);
+}
+
+.nexus-recent-time {
+  font-size: 0.7em;
+  color: var(--nx-text-muted);
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+/* Sidebar Balance */
+.nexus-sidebar-balance {
+  padding: 10px 14px;
+}
+
+.nexus-sidebar-balance-empty,
+.nexus-sidebar-balance-loading {
+  color: var(--nx-text-muted);
+  font-size: 0.8em;
+  text-align: center;
+  padding: 8px;
+}
+
+.nexus-sidebar-balance-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.nexus-sidebar-balance-amount {
+  font-size: 1.2em;
+  font-weight: 700;
+  color: var(--nx-text);
+}
+
+.nexus-sidebar-balance-ok {
+  font-size: 0.75em;
+  color: #10b981;
+}
+
+.nexus-sidebar-balance-off {
+  font-size: 0.75em;
+  color: #ef4444;
+}
+
+/* ===== FILE PICKER ===== */
+.nexus-file-picker-results {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nexus-file-picker-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.nexus-file-picker-item:hover {
+  background: var(--nx-bg-card-hover);
+}
+
+.nexus-file-picker-name {
+  font-size: 0.9em;
+  font-weight: 500;
+  color: var(--nx-text);
+}
+
+.nexus-file-picker-path {
+  font-size: 0.7em;
+  color: var(--nx-text-muted);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  max-width: 200px;
+}
+
 .nexus-file-picker-empty {
   text-align: center;
+  padding: 20px;
   color: var(--nx-text-muted);
-  padding: 12px;
+  font-size: 0.85em;
+}
+
+/* ===== TODO ADD BUTTON ===== */
+.nexus-todo-add-btn {
+  background: var(--nx-accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 4px 12px;
+  font-size: 0.8em;
+  cursor: pointer;
+  transition: opacity 0.15s;
+}
+
+.nexus-todo-add-btn:hover {
+  opacity: 0.85;
+}
+
+/* ===== MODAL ===== */
+.nexus-modal-input {
+  padding: 8px 12px;
+  border: 1px solid var(--nx-border);
+  border-radius: 6px;
+  background: var(--nx-bg-card);
+  color: var(--nx-text);
+  font-size: 14px;
+  outline: none;
+}
+
+.nexus-modal-input:focus {
+  border-color: var(--nx-accent);
+}
+
+.nexus-modal-buttons button {
+  padding: 6px 16px;
+  border-radius: 6px;
+  border: 1px solid var(--nx-border);
+  background: var(--nx-bg-card);
+  color: var(--nx-text);
+  cursor: pointer;
+}
+
+.nexus-modal-buttons button.mod-cta {
+  background: var(--nx-accent);
+  color: #fff;
+  border-color: var(--nx-accent);
+}
+
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+  .nexus-grid {
+    grid-template-columns: 1fr !important;
+    grid-template-rows: repeat(4, 1fr) !important;
+  }
+
+  .nexus-kanban-board {
+    flex-direction: column;
+  }
 }
