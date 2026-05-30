@@ -298,16 +298,19 @@ date: ${new Date().toISOString().slice(0, 10)}
     const flushCard = () => {
       if (currentCard && currentColumn && currentCard.title) {
         const card: KanbanCard = {
-          id: currentCard.id || this.generateId(currentCard.title, currentColumn.name),
-          title: currentCard.title,
-          type: currentCard.type || "note",
-          body: currentCardLines.join("\n").trim(),
-          tags: currentCard.tags || [],
-          dueDate: currentCard.dueDate || "",
-          checked: currentCardTasks.length > 0 ? currentCardTasks.every((t) => t.checked) : false,
-          createdAt: currentCard.createdAt || "",
-          completedAt: (currentCard as any).completedAt || "",
-          tasks: currentCardTasks,
+        id: currentCard.id || this.generateId(currentCard.title, currentColumn.name),
+        title: currentCard.title,
+        type: currentCard.type || "note",
+        body: currentCardLines.join("\n").trim(),
+        tags: currentCard.tags || [],
+        dueDate: currentCard.dueDate || "",
+        // For taskless cards, use completedAt as fallback for checked state
+        checked: currentCardTasks.length > 0
+          ? currentCardTasks.every((t) => t.checked)
+          : !!(currentCard as any).completedAt,
+        createdAt: currentCard.createdAt || "",
+        completedAt: (currentCard as any).completedAt || "",
+        tasks: currentCardTasks,
         };
         currentColumn.cards.push(card);
       }
