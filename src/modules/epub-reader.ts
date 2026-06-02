@@ -2,7 +2,7 @@ import { ItemView, WorkspaceLeaf, TFile } from "obsidian";
 import NexusPlugin from "../main";
 import ePub from "epubjs";
 import { formatDuration } from "../utils";
-import { getEpubFilePathFromState, getEpubReaderErrorMessage } from "../epub-reader-state";
+import { getEpubFilePathFromState, getEpubReaderErrorMessage, shouldDeferEpubOpenError } from "../epub-reader-state";
 
 export const NEXUS_EPUB_VIEW_TYPE = "nexus-epub-reader";
 
@@ -23,10 +23,12 @@ export class EpubReaderView extends ItemView {
   file: TFile | null = null;
   plugin: NexusPlugin | null = null;
   private filePath: string | null = null;
+  private stateReady = false;
   private book: any = null;
   private rendition: any = null;
   private readingStartTime = 0;
   private timerInterval: ReturnType<typeof setInterval> | null = null;
+  private lastCfi: string | null = null;
 
   constructor(leaf: WorkspaceLeaf) {
     super(leaf);
@@ -36,7 +38,18 @@ export class EpubReaderView extends ItemView {
     this.filePath = getEpubFilePathFromState(state);
     this.file = this.filePath ? this.app.vault.getFileByPath(this.filePath) || null : null;
     this.plugin = _plugin;
-    return super.setState(state, result);
+    this.stateReady = true;
+    await super.setState(state, result);
+    // If onOpen already ran before state was ready, trigger rendering now
+    if (!this.file) {
+      this.renderError(getEpubReaderErrorMessage(this.filePath));
+      return;
+    }
+    if (!this.plugin) {
+      this.renderError("EPUB 阅读器未完成初始化");
+      return;
+    }
+    await this.renderReader();
   }
 
   getViewType() { return NEXUS_EPUB_VIEW_TYPE; }
@@ -44,6 +57,13 @@ export class EpubReaderView extends ItemView {
   getIcon() { return "book-open"; }
 
   async onOpen() {
+    // Defer if setState hasn't been called yet — happens when Obsidian calls
+    // onOpen before setState during view construction
+    if (shouldDeferEpubOpenError(this.filePath, this.stateReady)) {
+      return;
+    }
+    // If setState already rendered, skip redundant render
+    if (this.contentEl.children.length > 0) return;
     if (!this.file) {
       this.renderError(getEpubReaderErrorMessage(this.filePath));
       return;
@@ -123,6 +143,19 @@ export class EpubReaderView extends ItemView {
 
       this.rendition.display();
 
+      // Restore reading position from last session
+      const savedCfi = this.plugin!.settings.readingStats[this.file!.path]?.lastLocationCfi;
+      if (savedCfi) {
+        this.rendition.display(savedCfi);
+      }
+
+      // Track current position for save on close
+      this.rendition.on("relocated", (location: any) => {
+        if (location?.start?.cfi) {
+          this.lastCfi = location.start.cfi;
+        }
+      });
+
       // Theme
       const isDark = document.body.classList.contains("theme-dark");
       this.rendition.themes.override("color", isDark ? "#e2e8f0" : "#1e293b");
@@ -185,6 +218,9 @@ export class EpubReaderView extends ItemView {
     stats[key].totalDurationMs += durationMs;
     stats[key].sessionCount += 1;
     stats[key].lastReadAt = new Date().toISOString();
+    if (this.lastCfi) {
+      stats[key].lastLocationCfi = this.lastCfi;
+    }
 
     const today = new Date();
     const dateKey = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
