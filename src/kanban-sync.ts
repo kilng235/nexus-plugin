@@ -20,6 +20,7 @@ export class KanbanSync {
   private lastWrittenHash: number = 0;
   private debounceTimer: ReturnType<typeof setTimeout> | null = null;
   private debounceMs = 300;
+  private midnightTimer: ReturnType<typeof setTimeout> | null = null;
   private callbacks: Array<(data: KanbanData) => void> = [];
   private eventRef: any = null;
   private onActivity: ((type: string) => void) | null = null;
@@ -45,6 +46,7 @@ export class KanbanSync {
     await this.findOrCreateFile();
     this.registerFileWatcher();
     await this.load();
+    this.scheduleMidnightCheck();
   }
 
   destroy() {
@@ -53,6 +55,7 @@ export class KanbanSync {
       this.eventRef = null;
     }
     if (this.debounceTimer) clearTimeout(this.debounceTimer);
+    if (this.midnightTimer) clearTimeout(this.midnightTimer);
   }
 
   getData(): KanbanData | null {
@@ -280,6 +283,23 @@ date: ${new Date().toISOString().slice(0, 10)}
       console.error("Nexus: failed to write kanban data", e);
     }
     this.notifyCallbacks();
+    this.scheduleMidnightCheck();
+  }
+
+  /**
+   * Schedule a check at local midnight to archive completed cards
+   * from the previous day, even if Obsidian stays open.
+   */
+  private scheduleMidnightCheck() {
+    if (this.midnightTimer) clearTimeout(this.midnightTimer);
+    const now = new Date();
+    const midnight = new Date(now);
+    midnight.setHours(24, 0, 0, 0); // next local midnight
+    const msUntilMidnight = midnight.getTime() - now.getTime();
+    this.midnightTimer = setTimeout(() => {
+      this.midnightTimer = null;
+      this.load();
+    }, msUntilMidnight);
   }
 
   private notifyCallbacks() {
