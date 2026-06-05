@@ -4,7 +4,33 @@ import { InputModal } from "./input-modal";
 import { App } from "obsidian";
 import { ActivityLog } from "../activity-log";
 
-export function renderTodo(
+/**
+ * Count this month's completed tasks from archive file.
+ */
+async function countArchivedThisMonth(app: App, monthKey: string): Promise<number> {
+  try {
+    const archivePath = `nexus/archive/${monthKey}.md`;
+    const file = app.vault.getFileByPath(archivePath);
+    if (!file) return 0;
+    const content = await app.vault.read(file);
+    // Count each "- [x]" line as one completed task
+    const matches = content.match(/^- \[x\]/gm);
+    return matches ? matches.length : 0;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Count today's completed tasks from kanban data.
+ */
+function countTodayCompleted(data: KanbanData): number {
+  const col = data.columns.find((c) => c.name === "已完成");
+  if (!col) return 0;
+  return col.cards.filter((c) => c.type === "task" && c.checked).length;
+}
+
+export async function renderTodo(
   el: HTMLElement,
   data: KanbanData,
   sync: KanbanSync,
@@ -19,20 +45,22 @@ export function renderTodo(
   const headerMain = header.createDiv({ cls: "nexus-todo-header-main" });
   headerMain.createEl("h3", { text: "待办" });
 
-  // Collect all task cards from all columns
-  const taskCards = data.columns.flatMap((col) =>
-    col.cards
-      .filter((c) => c.type === "task")
-      .map((c) => ({ ...c, columnName: col.name }))
-  );
+  // Collect task cards from 待做 and 已完成 columns only
+  const relevantColumns = ["待做", "已完成"];
+  const taskCards = data.columns
+    .filter((col) => relevantColumns.includes(col.name))
+    .flatMap((col) =>
+      col.cards
+        .filter((c) => c.type === "task")
+        .map((c) => ({ ...c, columnName: col.name }))
+    );
 
   const pendingCount = taskCards.filter((card) => !card.checked).length;
   const now = new Date();
   const monthKey = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
-  const completedCount = Object.entries(activityLog || {}).reduce((sum, [dateKey, activity]) => {
-    if (!dateKey.startsWith(monthKey)) return sum;
-    return sum + (activity.todoCheck || 0);
-  }, 0);
+  const todayCount = countTodayCompleted(data);
+  const archivedCount = await countArchivedThisMonth(app, monthKey);
+  const completedCount = todayCount + archivedCount;
 
   const statsEl = headerMain.createDiv({ cls: "nexus-todo-stats" });
   statsEl.createEl("span", {

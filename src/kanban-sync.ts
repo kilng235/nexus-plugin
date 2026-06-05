@@ -1,6 +1,7 @@
 import { App, TFile } from "obsidian";
 import { KanbanData, KanbanColumn, KanbanCard, NexusSettings } from "./types";
 import { deriveCardCheckedState, getTodoCheckDelta } from "./todo-completion";
+import { appendToArchive } from "./archive";
 
 const HASH_FN = (s: string): number => {
   let h = 0;
@@ -223,22 +224,50 @@ date: ${new Date().toISOString().slice(0, 10)}
     const hash = HASH_FN(content);
     if (hash === this.lastWrittenHash) return;
     this.data = this.parseMarkdown(content);
-    if (this.pruneCompletedCards()) {
-      await this.writeToDisk();
-    }
+    await this.archiveCompletedCards();
     this.notifyCallbacks();
   }
 
-  private pruneCompletedCards(): boolean {
-    if (!this.data) return false;
-    const today = new Date().toISOString().slice(0, 10);
-    let pruned = false;
-    for (const col of this.data.columns) {
-      const before = col.cards.length;
-      col.cards = col.cards.filter((c) => !c.checked || c.completedAt === today);
-      if (col.cards.length < before) pruned = true;
+  private async archiveCompletedCards() {
+    if (!this.data) {
+      console.log("Nexus: archiveCompletedCards - no data");
+      return;
     }
-    return pruned;
+    const today = new Date().toISOString().slice(0, 10);
+    console.log("Nexus: archiveCompletedCards - today:", today);
+    let archived = false;
+
+    for (const col of this.data.columns) {
+      const toArchive: Array<{ card: KanbanCard; colName: string }> = [];
+
+      // Collect cards that are checked and completed on a previous day
+      for (const card of col.cards) {
+        if (card.checked && card.completedAt) {
+          console.log(`Nexus: card "${card.title}" checked=${card.checked} completedAt=${card.completedAt} col=${col.name}`);
+          if (card.completedAt !== today) {
+            toArchive.push({ card, colName: col.name });
+            console.log(`Nexus: will archive card "${card.title}"`);
+          }
+        }
+      }
+
+      // Archive each card
+      for (const { card, colName } of toArchive) {
+        console.log(`Nexus: archiving card "${card.title}" to ${card.completedAt}`);
+        const ok = await appendToArchive(this.app, card, colName);
+        console.log(`Nexus: archive result for "${card.title}":`, ok);
+        if (ok) {
+          // Remove from current data only if archive succeeded
+          col.cards = col.cards.filter((c) => c.id !== card.id);
+          archived = true;
+        }
+      }
+    }
+
+    console.log("Nexus: archiveCompletedCards - archived:", archived);
+    if (archived) {
+      await this.writeToDisk();
+    }
   }
 
   private async writeToDisk() {

@@ -37,7 +37,7 @@ export const DEFAULT_SETTINGS: NexusSettings = {
     { id: "bookshelf", x: 1, y: 1, w: 2, h: 1 },
   ],
   heatmapWeights: {
-    cardComplete: 10,
+    cardComplete: 5,
     reading10min: 3,
     cardCreate: 2,
     noteEdit: 1,

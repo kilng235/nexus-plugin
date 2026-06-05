@@ -13,7 +13,6 @@ export function renderHeatmap(el: HTMLElement, settings: NexusSettings, activity
   let viewMonth = now.getMonth(); // 0-indexed
 
   function render() {
-    const maxScore = Math.max(1, ...getMonthScores(scores, viewYear, viewMonth));
     const totalPoints = getMonthScores(scores, viewYear, viewMonth).reduce((a, b) => a + b, 0);
 
     el.empty();
@@ -85,7 +84,7 @@ export function renderHeatmap(el: HTMLElement, settings: NexusSettings, activity
           const date = new Date(viewYear, viewMonth, dayNum);
           const key = formatDate(date);
           const score = scores[key] || 0;
-          const level = score === 0 ? 0 : Math.min(4, Math.ceil((score / maxScore) * 4));
+          const level = score === 0 ? 0 : Math.min(4, Math.ceil(score / 10));
 
           const cell = td.createDiv({
             cls: `nexus-heatmap-cell nexus-heatmap-cell--level-${level}`,
