@@ -12,7 +12,7 @@ import { todayStr, monthStr } from "../utils";
  */
 async function countArchivedThisMonth(app: App, monthKey: string): Promise<number> {
   try {
-    const archivePath = `nexus/archive/${monthKey}.md`;
+    const archivePath = `hubstack/archive/${monthKey}.md`;
     const file = app.vault.getFileByPath(archivePath);
     if (!file) return 0;
     const content = await app.vault.read(file);

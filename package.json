@@ -1,5 +1,5 @@
 {
-  "name": "nexus",
+  "name": "hubstack",
   "version": "0.1.0",
   "description": "Homepage dashboard with kanban, todo, heatmap, and epub bookshelf",
   "main": "main.js",

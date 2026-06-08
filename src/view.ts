@@ -1,5 +1,5 @@
 import { ItemView, WorkspaceLeaf, TFile } from "obsidian";
-import NexusPlugin from "./main";
+import HubstackPlugin from "./main";
 import { KanbanData } from "./types";
 import { KanbanSync } from "./kanban-sync";
 import { renderBanner, cleanupBanner } from "./modules/banner";
@@ -7,24 +7,25 @@ import { renderSidebar } from "./modules/sidebar";
 import { renderTodo } from "./modules/todo";
 import { renderHeatmap } from "./modules/heatmap";
 import { renderBookshelf } from "./modules/bookshelf";
+import { loadActivityLog, saveActivityLog, todayKey, ActivityLog } from "./activity-log";
 
-export const NEXUS_VIEW_TYPE = "nexus-view";
+export const HUBSTACK_VIEW_TYPE = "hubstack-view";
 
-export class NexusView extends ItemView {
-  plugin: NexusPlugin;
+export class HubstackView extends ItemView {
+  plugin: HubstackPlugin;
   kanbanSync: KanbanSync;
   kanbanData: KanbanData | null = null;
   cleanupFns: Array<() => void> = [];
   activityLog: ActivityLog = {};
 
-  constructor(leaf: WorkspaceLeaf, plugin: NexusPlugin) {
+  constructor(leaf: WorkspaceLeaf, plugin: HubstackPlugin) {
     super(leaf);
     this.plugin = plugin;
     this.kanbanSync = new KanbanSync(this.app, plugin.settings);
   }
 
-  getViewType(): string { return NEXUS_VIEW_TYPE; }
-  getDisplayText(): string { return "Nexus"; }
+  getViewType(): string { return HUBSTACK_VIEW_TYPE; }
+  getDisplayText(): string { return "Hubstack"; }
   getIcon(): string { return "home"; }
 
   async onOpen() {
@@ -32,7 +33,9 @@ export class NexusView extends ItemView {
     this.activityLog = await loadActivityLog(this.app);
     this.kanbanSync.setActivityCallback((type: string) => {
       const key = todayKey();
-      if (!this.activityLog[key]) this.activityLog[key] = { cardComplete: 0, todoCheck: 0, cardCreate: 0, noteEdit: 0, noteCreate: 0 };
+      if (!this.activityLog[key]) {
+        this.activityLog[key] = { cardComplete: 0, todoCheck: 0, cardCreate: 0, noteEdit: 0, noteCreate: 0 };
+      }
       if (type === "todoCheck") this.activityLog[key].todoCheck++;
       if (type === "todoUncheck") this.activityLog[key].todoCheck = Math.max(0, this.activityLog[key].todoCheck - 1);
       if (type === "cardComplete") this.activityLog[key].cardComplete++;
@@ -70,7 +73,7 @@ export class NexusView extends ItemView {
       if (!(file instanceof TFile) || file.extension !== "md") return;
       const kanbanPath = this.plugin.settings.kanbanFile.trim();
       const kanbanFile = kanbanPath.endsWith(".md") ? kanbanPath : `${kanbanPath}.md`;
-      if (file.path === kanbanFile || file.path.includes(".obsidian/plugins/nexus")) return;
+      if (file.path === kanbanFile || file.path.includes(".obsidian/plugins/hubstack")) return;
       if (editDebounce) clearTimeout(editDebounce);
       editDebounce = setTimeout(() => this.recordActivity("noteEdit"), 5000);
     }));
@@ -78,7 +81,9 @@ export class NexusView extends ItemView {
 
   private recordActivity(type: string) {
     const key = todayKey();
-    if (!this.activityLog[key]) this.activityLog[key] = { cardComplete: 0, todoCheck: 0, cardCreate: 0, noteEdit: 0, noteCreate: 0 };
+    if (!this.activityLog[key]) {
+      this.activityLog[key] = { cardComplete: 0, todoCheck: 0, cardCreate: 0, noteEdit: 0, noteCreate: 0 };
+    }
     if (type === "noteEdit") this.activityLog[key].noteEdit++;
     if (type === "noteCreate") this.activityLog[key].noteCreate++;
     saveActivityLog(this.app, this.activityLog);
@@ -98,24 +103,19 @@ export class NexusView extends ItemView {
     container.addClass("nexus-root");
     container.setAttribute("data-theme", this.plugin.settings.stylePreset);
 
-    // Banner
     const bannerEl = container.createDiv({ cls: "nexus-banner" });
     if (this.plugin.settings.bannerHeight) {
       bannerEl.style.minHeight = `${this.plugin.settings.bannerHeight}px`;
     }
-    renderBanner(bannerEl, this.plugin.settings, this.app, () => this.plugin.saveSettings());
+    renderBanner(bannerEl, this.plugin.settings, this.app);
 
-    // Two-column layout
     const body = container.createDiv({ cls: "nexus-body" });
 
-    // Left sidebar
     const sidebar = body.createDiv({ cls: "nexus-left-sidebar" });
     renderSidebar(sidebar, this.app, this.plugin, this.cleanupFns);
 
-    // Right main content
     const main = body.createDiv({ cls: "nexus-main" });
 
-    // To-Do section
     const todoSection = main.createDiv({ cls: "nexus-section" });
     const todoHeader = todoSection.createDiv({ cls: "nexus-section-header" });
     todoHeader.createDiv({ cls: "nexus-section-dot nexus-section-dot--red" });
@@ -125,7 +125,6 @@ export class NexusView extends ItemView {
       renderTodo(todoBody, this.kanbanData, this.kanbanSync, this.app, this.activityLog, this.cleanupFns);
     }
 
-    // Heatmap section
     const heatmapSection = main.createDiv({ cls: "nexus-section" });
     const heatmapHeader = heatmapSection.createDiv({ cls: "nexus-section-header" });
     heatmapHeader.createDiv({ cls: "nexus-section-dot nexus-section-dot--yellow" });
@@ -133,7 +132,6 @@ export class NexusView extends ItemView {
     const heatmapBody = heatmapSection.createDiv({ cls: "nexus-section-body" });
     renderHeatmap(heatmapBody, this.plugin.settings, this.activityLog);
 
-    // Bookshelf section
     const bookSection = main.createDiv({ cls: "nexus-section" });
     const bookHeader = bookSection.createDiv({ cls: "nexus-section-header" });
     bookHeader.createDiv({ cls: "nexus-section-dot nexus-section-dot--blue" });
@@ -142,4 +140,3 @@ export class NexusView extends ItemView {
     renderBookshelf(bookBody, this.app, this.plugin, this.cleanupFns);
   }
 }
-import { loadActivityLog, saveActivityLog, todayKey, ActivityLog } from "./activity-log";

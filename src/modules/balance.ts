@@ -1,4 +1,4 @@
-import { NexusSettings } from "../types";
+import { HubstackSettings } from "../types";
 
 interface DeepSeekBalance {
   is_available: boolean;
@@ -12,7 +12,7 @@ interface DeepSeekBalance {
 
 export function renderBalance(
   el: HTMLElement,
-  settings: NexusSettings
+  settings: HubstackSettings
 ) {
   el.empty();
   el.addClass("nexus-balance");

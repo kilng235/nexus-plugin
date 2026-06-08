@@ -1,7 +1,10 @@
 import { App } from "obsidian";
 import { todayStr } from "./utils";
 
-const ACTIVITY_LOG_PATH = "nexus/activity-log.json";
+const ACTIVITY_DIR = "hubstack";
+const LEGACY_ACTIVITY_DIR = "nexus";
+const ACTIVITY_LOG_PATH = `${ACTIVITY_DIR}/activity-log.json`;
+const LEGACY_ACTIVITY_LOG_PATH = `${LEGACY_ACTIVITY_DIR}/activity-log.json`;
 
 export interface ActivityDay {
   cardComplete: number;
@@ -15,9 +18,9 @@ export type ActivityLog = Record<string, ActivityDay>;
 
 export async function loadActivityLog(app: App): Promise<ActivityLog> {
   try {
-    const exists = await app.vault.adapter.exists(ACTIVITY_LOG_PATH);
-    if (!exists) return {};
-    const content = await app.vault.adapter.read(ACTIVITY_LOG_PATH);
+    const activityPath = await resolveExistingPath(app, ACTIVITY_LOG_PATH, LEGACY_ACTIVITY_LOG_PATH);
+    if (!activityPath) return {};
+    const content = await app.vault.adapter.read(activityPath);
     return JSON.parse(content);
   } catch {
     return {};
@@ -26,10 +29,9 @@ export async function loadActivityLog(app: App): Promise<ActivityLog> {
 
 export async function saveActivityLog(app: App, log: ActivityLog): Promise<void> {
   try {
-    // 确保 nexus 目录存在
-    const dirExists = await app.vault.adapter.exists("nexus");
+    const dirExists = await app.vault.adapter.exists(ACTIVITY_DIR);
     if (!dirExists) {
-      await app.vault.createFolder("nexus");
+      await app.vault.createFolder(ACTIVITY_DIR);
     }
     await app.vault.adapter.write(ACTIVITY_LOG_PATH, JSON.stringify(log, null, 2));
   } catch (e) {
@@ -39,4 +41,10 @@ export async function saveActivityLog(app: App, log: ActivityLog): Promise<void>
 
 export function todayKey(): string {
   return todayStr();
+}
+
+async function resolveExistingPath(app: App, primaryPath: string, legacyPath: string): Promise<string | null> {
+  if (await app.vault.adapter.exists(primaryPath)) return primaryPath;
+  if (await app.vault.adapter.exists(legacyPath)) return legacyPath;
+  return null;
 }

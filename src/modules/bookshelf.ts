@@ -1,11 +1,11 @@
 import { App, TFile } from "obsidian";
-import NexusPlugin from "../main";
+import HubstackPlugin from "../main";
 import { openEpubInNewLeaf } from "./epub-reader";
 
 // ==================== Cover Cache ====================
 
-const COVER_DIR = "nexus/covers";
-const INDEX_PATH = "nexus/covers/index.json";
+const COVER_DIR = "hubstack/covers";
+const INDEX_PATH = "hubstack/covers/index.json";
 
 interface CoverCacheEntry {
   hash: string;
@@ -120,7 +120,7 @@ async function extractCoverFromEpub(file: TFile, app: App): Promise<ExtractResul
 export function renderBookshelf(
   el: HTMLElement,
   app: App,
-  plugin: NexusPlugin,
+  plugin: HubstackPlugin,
   _cleanupFns: Array<() => void>
 ) {
   el.empty();
@@ -150,7 +150,7 @@ export function renderBookshelf(
   }
 }
 
-function getBookEntry(file: TFile, plugin: NexusPlugin): BookEntry {
+function getBookEntry(file: TFile, plugin: HubstackPlugin): BookEntry {
   const stats = plugin.settings.readingStats[file.path];
   let status: "unread" | "reading" | "done" = "unread";
   if (stats && stats.totalDurationMs > 0) {
@@ -163,7 +163,7 @@ function renderBookCard(
   el: HTMLElement,
   entry: BookEntry,
   app: App,
-  plugin: NexusPlugin
+  plugin: HubstackPlugin
 ) {
   const card = el.createDiv({ cls: "nexus-book-card" });
 

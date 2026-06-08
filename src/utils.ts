@@ -1,4 +1,4 @@
-// Shared utilities for Nexus plugin
+// Shared utilities for Hubstack plugin
 
 /** Current date in local time as "YYYY-MM-DD" (avoids UTC timezone shift). */
 export function todayStr(): string {

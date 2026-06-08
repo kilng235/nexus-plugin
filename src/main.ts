@@ -1,30 +1,34 @@
 import { App, Plugin, PluginSettingTab, Setting } from "obsidian";
-import { NexusView, NEXUS_VIEW_TYPE } from "./view";
-import { EpubReaderView, NEXUS_EPUB_VIEW_TYPE } from "./modules/epub-reader";
-import { NexusSettings, DEFAULT_SETTINGS } from "./types";
+import { HubstackView, HUBSTACK_VIEW_TYPE } from "./view";
+import { EpubReaderView, HUBSTACK_EPUB_VIEW_TYPE } from "./modules/epub-reader";
+import { HubstackSettings } from "./types";
+import { loadExternalConfig, saveExternalConfig, mergeSettings } from "./config-sync";
+import { loadActivityLog, saveActivityLog } from "./activity-log";
 
-export default class NexusPlugin extends Plugin {
-  settings: NexusSettings;
+const LEGACY_PLUGIN_DATA_PATH = ".obsidian/plugins/nexus/data.json";
+
+export default class HubstackPlugin extends Plugin {
+  settings: HubstackSettings;
 
   async onload() {
     await this.loadSettings();
     await this.migrateCountdownSettings();
     await this.backfillActivityFromVault();
 
-    this.registerView(NEXUS_VIEW_TYPE, (leaf) => new NexusView(leaf, this));
-    this.registerView(NEXUS_EPUB_VIEW_TYPE, (leaf) => new EpubReaderView(leaf));
+    this.registerView(HUBSTACK_VIEW_TYPE, (leaf) => new HubstackView(leaf, this));
+    this.registerView(HUBSTACK_EPUB_VIEW_TYPE, (leaf) => new EpubReaderView(leaf));
 
-    this.addRibbonIcon("home", "打开 Nexus", () => {
+    this.addRibbonIcon("home", "打开 Hubstack", () => {
       this.activateView();
     });
 
     this.addCommand({
-      id: "open-nexus",
-      name: "打开 Nexus 首页",
+      id: "open-hubstack",
+      name: "打开 Hubstack 首页",
       callback: () => this.activateView(),
     });
 
-    this.addSettingTab(new NexusSettingTab(this.app, this));
+    this.addSettingTab(new HubstackSettingTab(this.app, this));
   }
 
   onunload() {}
@@ -32,12 +36,10 @@ export default class NexusPlugin extends Plugin {
   private async migrateCountdownSettings() {
     const raw = this.settings as any;
     if (raw.countdownName || raw.countdownTargetDate) {
-      if (raw.countdownName || raw.countdownTargetDate) {
-        this.settings.countdowns.push({
-          name: raw.countdownName || "",
-          targetDate: raw.countdownTargetDate || "",
-        });
-      }
+      this.settings.countdowns.push({
+        name: raw.countdownName || "",
+        targetDate: raw.countdownTargetDate || "",
+      });
       delete raw.countdownName;
       delete raw.countdownTargetDate;
       await this.saveSettings();
@@ -45,13 +47,24 @@ export default class NexusPlugin extends Plugin {
   }
 
   async loadSettings() {
-    const localData = await this.loadData();
+    const localData = (await this.loadData()) || (await this.loadLegacyLocalData()) || {};
     const externalData = await loadExternalConfig(this.app);
     this.settings = mergeSettings(externalData, localData);
   }
 
   async saveSettings() {
     await saveExternalConfig(this.app, this.settings);
+  }
+
+  private async loadLegacyLocalData(): Promise<Partial<HubstackSettings> | null> {
+    try {
+      const exists = await this.app.vault.adapter.exists(LEGACY_PLUGIN_DATA_PATH);
+      if (!exists) return null;
+      const content = await this.app.vault.adapter.read(LEGACY_PLUGIN_DATA_PATH);
+      return JSON.parse(content);
+    } catch {
+      return null;
+    }
   }
 
   private async backfillActivityFromVault() {
@@ -92,19 +105,19 @@ export default class NexusPlugin extends Plugin {
 
   async activateView() {
     const { workspace } = this.app;
-    let leaf = workspace.getLeavesOfType(NEXUS_VIEW_TYPE)[0];
+    let leaf = workspace.getLeavesOfType(HUBSTACK_VIEW_TYPE)[0];
     if (!leaf) {
       leaf = workspace.getLeaf(true);
-      await leaf.setViewState({ type: NEXUS_VIEW_TYPE, active: true });
+      await leaf.setViewState({ type: HUBSTACK_VIEW_TYPE, active: true });
     }
     workspace.revealLeaf(leaf);
   }
 }
 
-class NexusSettingTab extends PluginSettingTab {
-  plugin: NexusPlugin;
+class HubstackSettingTab extends PluginSettingTab {
+  plugin: HubstackPlugin;
 
-  constructor(app: App, plugin: NexusPlugin) {
+  constructor(app: App, plugin: HubstackPlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -113,17 +126,17 @@ class NexusSettingTab extends PluginSettingTab {
     const { containerEl } = this;
     containerEl.empty();
 
-    containerEl.createEl("h2", { text: "Nexus 设置" });
+    containerEl.createEl("h2", { text: "Hubstack 设置" });
 
     new Setting(containerEl)
       .setName("看板文件")
       .setDesc("看板数据文件路径（不含 .md 扩展名）")
       .addText((text) =>
         text
-          .setPlaceholder("nexus-kanban")
+          .setPlaceholder("hubstack-kanban")
           .setValue(this.plugin.settings.kanbanFile)
           .onChange(async (value) => {
-            this.plugin.settings.kanbanFile = value || "nexus-kanban";
+            this.plugin.settings.kanbanFile = value || "hubstack-kanban";
             await this.plugin.saveSettings();
           })
       );
@@ -181,5 +194,3 @@ class NexusSettingTab extends PluginSettingTab {
       );
   }
 }
-import { loadExternalConfig, saveExternalConfig, mergeSettings } from "./config-sync";
-import { loadActivityLog, saveActivityLog, todayKey } from "./activity-log";

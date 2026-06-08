@@ -1,19 +1,19 @@
 import { ItemView, WorkspaceLeaf, TFile } from "obsidian";
-import NexusPlugin from "../main";
+import HubstackPlugin from "../main";
 import ePub from "epubjs";
 import { formatDuration } from "../utils";
 import { getEpubFilePathFromState, getEpubReaderErrorMessage, shouldDeferEpubOpenError } from "../epub-reader-state";
 
-export const NEXUS_EPUB_VIEW_TYPE = "nexus-epub-reader";
+export const HUBSTACK_EPUB_VIEW_TYPE = "hubstack-epub-reader";
 
 // Single plugin reference used for stats persistence after state-driven file restore
-let _plugin: NexusPlugin | null = null;
+let _plugin: HubstackPlugin | null = null;
 
-export function openEpubInNewLeaf(file: TFile, plugin: NexusPlugin) {
+export function openEpubInNewLeaf(file: TFile, plugin: HubstackPlugin) {
   _plugin = plugin;
   const leaf = plugin.app.workspace.getLeaf(true);
   leaf.setViewState({
-    type: NEXUS_EPUB_VIEW_TYPE,
+    type: HUBSTACK_EPUB_VIEW_TYPE,
     active: true,
     state: { filePath: file.path },
   });
@@ -21,7 +21,7 @@ export function openEpubInNewLeaf(file: TFile, plugin: NexusPlugin) {
 
 export class EpubReaderView extends ItemView {
   file: TFile | null = null;
-  plugin: NexusPlugin | null = null;
+  plugin: HubstackPlugin | null = null;
   private filePath: string | null = null;
   private stateReady = false;
   private book: any = null;
@@ -52,7 +52,7 @@ export class EpubReaderView extends ItemView {
     await this.renderReader();
   }
 
-  getViewType() { return NEXUS_EPUB_VIEW_TYPE; }
+  getViewType() { return HUBSTACK_EPUB_VIEW_TYPE; }
   getDisplayText() { return this.file?.basename || "EPUB"; }
   getIcon() { return "book-open"; }
 
@@ -251,4 +251,3 @@ export class EpubReaderView extends ItemView {
     this.readingStartTime = 0;
   }
 }
-

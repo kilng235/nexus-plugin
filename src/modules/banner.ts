@@ -1,9 +1,9 @@
 import { App } from "obsidian";
-import { NexusSettings } from "../types";
+import { HubstackSettings } from "../types";
 
 export function renderBanner(
   el: HTMLElement,
-  settings: NexusSettings,
+  settings: HubstackSettings,
   app: App
 ) {
   el.empty();
@@ -237,13 +237,13 @@ export function renderBanner(
   };
 }
 
-function getBannerHeight(settings: NexusSettings): number {
+function getBannerHeight(settings: HubstackSettings): number {
   return settings.bannerHeight || 120;
 }
 
-function saveSettings(settings: NexusSettings, app: App) {
+function saveSettings(settings: HubstackSettings, app: App) {
   app.vault.adapter.write(
-    app.vault.configDir + "/plugins/nexus/data.json",
+    app.vault.configDir + "/plugins/hubstack/data.json",
     JSON.stringify(settings, null, 2)
   );
 }

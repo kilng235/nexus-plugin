@@ -1,5 +1,5 @@
 import { App, TFile } from "obsidian";
-import { KanbanData, KanbanColumn, KanbanCard, NexusSettings } from "./types";
+import { KanbanData, KanbanColumn, KanbanCard, HubstackSettings } from "./types";
 import { getTodoCheckDelta } from "./todo-completion";
 import { todayStr } from "./utils";
 import {
@@ -12,7 +12,7 @@ import { archiveCompletedCards, MidnightScheduler } from "./kanban-archive";
 
 export class KanbanSync {
   private app: App;
-  private settings: NexusSettings;
+  private settings: HubstackSettings;
   private file: TFile | null = null;
   private data: KanbanData | null = null;
   private lastWrittenHash: number = 0;
@@ -27,12 +27,12 @@ export class KanbanSync {
     this.onActivity = cb;
   }
 
-  constructor(app: App, settings: NexusSettings) {
+  constructor(app: App, settings: HubstackSettings) {
     this.app = app;
     this.settings = settings;
   }
 
-  updateSettings(settings: NexusSettings) {
+  updateSettings(settings: HubstackSettings) {
     this.settings = settings;
   }
 
@@ -189,7 +189,7 @@ columns:
 
 ## 待做
 
-### 欢迎使用 Nexus
+### 欢迎使用 Hubstack
 type: task
 date: ${todayStr()}
 
@@ -238,7 +238,7 @@ date: ${todayStr()}
     try {
       await this.app.vault.modify(this.file, content);
     } catch (e) {
-      console.error("Nexus: failed to write kanban data", e);
+      console.error("Hubstack: failed to write kanban data", e);
     }
     this.registerFileWatcher();
   }
@@ -250,7 +250,7 @@ date: ${todayStr()}
     try {
       await this.app.vault.modify(this.file, content);
     } catch (e) {
-      console.error("Nexus: failed to write kanban data", e);
+      console.error("Hubstack: failed to write kanban data", e);
     }
     this.notifyCallbacks();
     this.midnight.schedule(() => this.load());

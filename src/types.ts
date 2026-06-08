@@ -11,7 +11,7 @@ export interface CountdownItem {
   targetDate: string;
 }
 
-export interface NexusSettings {
+export interface HubstackSettings {
   kanbanFile: string;
   bannerImage: string;
   bannerQuote: string;
@@ -29,8 +29,8 @@ export interface NexusSettings {
   countdowns: CountdownItem[];
 }
 
-export const DEFAULT_SETTINGS: NexusSettings = {
-  kanbanFile: "nexus/nexus-kanban",
+export const DEFAULT_SETTINGS: HubstackSettings = {
+  kanbanFile: "hubstack/hubstack-kanban",
   bannerImage: "",
   bannerQuote: "Your daily command center",
   bannerPosition: { x: 50, y: 50 },

@@ -1,5 +1,5 @@
 import { ActivityLog } from "./activity-log";
-import { NexusSettings } from "./types";
+import { HubstackSettings } from "./types";
 
 export function scoreToHeatmapLevel(score: number): number {
   if (score <= 0) return 0;
@@ -9,7 +9,7 @@ export function scoreToHeatmapLevel(score: number): number {
   return 4;
 }
 
-export function buildDailyScores(settings: NexusSettings, activityLog?: ActivityLog): Record<string, number> {
+export function buildDailyScores(settings: HubstackSettings, activityLog?: ActivityLog): Record<string, number> {
   const scores: Record<string, number> = {};
   const w = settings.heatmapWeights;
 

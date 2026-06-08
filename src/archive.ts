@@ -3,7 +3,7 @@ import { KanbanCard } from "./types";
 
 function getArchivePath(dateStr: string): string {
   const [year, month] = dateStr.split("-");
-  return `nexus/archive/${year}-${month}.md`;
+  return `hubstack/archive/${year}-${month}.md`;
 }
 
 async function readFile(app: App, path: string): Promise<string> {
@@ -13,12 +13,12 @@ async function readFile(app: App, path: string): Promise<string> {
 }
 
 async function ensureArchiveDir(app: App): Promise<void> {
-  const dir = app.vault.getAbstractFileByPath("nexus/archive");
+  const dir = app.vault.getAbstractFileByPath("hubstack/archive");
   if (!dir) {
     try {
-      await app.vault.createFolder("nexus/archive");
+      await app.vault.createFolder("hubstack/archive");
     } catch (e) {
-      console.error("Nexus: failed to create archive directory", e);
+      console.error("Hubstack: failed to create archive directory", e);
     }
   }
 }
@@ -82,7 +82,7 @@ export async function appendToArchive(
       await app.vault.create(archivePath, header + content);
     }
   } catch (e) {
-    console.error("Nexus: failed to write archive entry", e);
+    console.error("Hubstack: failed to write archive entry", e);
     return false;
   }
   return true;

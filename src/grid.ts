@@ -1,8 +1,8 @@
-import { NexusSettings, GridCell } from "./types";
+import { HubstackSettings, GridCell } from "./types";
 
 export function setupDraggableGrid(
   gridEl: HTMLElement,
-  settings: NexusSettings,
+  settings: HubstackSettings,
   onLayoutChange: (layout: GridCell[]) => void
 ) {
   applyGridLayout(gridEl, settings.gridLayout);

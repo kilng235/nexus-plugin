@@ -1,9 +1,9 @@
-import { NexusSettings } from "../types";
+import { HubstackSettings } from "../types";
 import { ActivityLog } from "../activity-log";
 
 const DAY_NAMES = ["周一", "周二", "周三", "周四", "周五", "周六", "周日"];
 
-export function renderHeatmap(el: HTMLElement, settings: NexusSettings, activityLog?: ActivityLog) {
+export function renderHeatmap(el: HTMLElement, settings: HubstackSettings, activityLog?: ActivityLog) {
   el.empty();
   el.addClass("nexus-heatmap");
 
@@ -119,7 +119,7 @@ function getMonthScores(scores: Record<string, number>, year: number, month: num
   return result;
 }
 
-function buildDailyScores(settings: NexusSettings, activityLog?: ActivityLog): Record<string, number> {
+function buildDailyScores(settings: HubstackSettings, activityLog?: ActivityLog): Record<string, number> {
   const scores: Record<string, number> = {};
   const w = settings.heatmapWeights;
 

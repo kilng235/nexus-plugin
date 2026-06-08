@@ -1,12 +1,12 @@
 import { App, TFile } from "obsidian";
-import NexusPlugin from "../main";
+import HubstackPlugin from "../main";
 import { getCountdownStatus, normalizeDateStr } from "../utils";
 import { InputModal } from "./input-modal";
 
 export function renderSidebar(
   el: HTMLElement,
   app: App,
-  plugin: NexusPlugin,
+  plugin: HubstackPlugin,
   cleanupFns: Array<() => void>
 ) {
   el.empty();
@@ -55,7 +55,7 @@ export function renderSidebar(
   renderSidebarCountdown(countdownSection, app, plugin, cleanupFns);
 }
 
-function renderQuickLinks(el: HTMLElement, plugin: NexusPlugin) {
+function renderQuickLinks(el: HTMLElement, plugin: HubstackPlugin) {
   el.empty();
   const links = plugin.settings.quickLinks || [];
 
@@ -105,7 +105,7 @@ function renderQuickLinks(el: HTMLElement, plugin: NexusPlugin) {
   }
 }
 
-function renderRecentFiles(el: HTMLElement, app: App, plugin: NexusPlugin) {
+function renderRecentFiles(el: HTMLElement, app: App, plugin: HubstackPlugin) {
   el.empty();
 
   // Get recently modified .md files (excluding plugin internals)
@@ -152,7 +152,7 @@ function formatRelativeTime(timestamp: number): string {
   return `${Math.floor(days / 30)}个月前`;
 }
 
-function renderSidebarBalance(el: HTMLElement, plugin: NexusPlugin) {
+function renderSidebarBalance(el: HTMLElement, plugin: HubstackPlugin) {
   const title = el.createEl("h3", { cls: "nexus-sidebar-title" });
   title.createSpan({ text: "DeepSeek 余额" });
   title.addClass("nexus-sidebar-title--balance");
@@ -200,7 +200,7 @@ function renderSidebarBalance(el: HTMLElement, plugin: NexusPlugin) {
 function renderSidebarCountdown(
   el: HTMLElement,
   app: App,
-  plugin: NexusPlugin,
+  plugin: HubstackPlugin,
   cleanupFns: Array<() => void>
 ) {
   const title = el.createEl("h3", { cls: "nexus-sidebar-title" });

@@ -1,4 +1,4 @@
-# Nexus
+# Hubstack
 
 Obsidian 首页仪表盘插件 — 侧边栏 + 待办 + 热力图 + 书架 + epub 阅读器
 
@@ -40,7 +40,7 @@ Obsidian 首页仪表盘插件 — 侧边栏 + 待办 + 热力图 + 书架 + epu
 ## 安装
 
 1. 下载 `main.js`、`styles.css`、`manifest.json`
-2. 放入 `.obsidian/plugins/nexus/`
+2. 放入 `.obsidian/plugins/hubstack/`
 3. 在 Obsidian 设置中启用插件
 
 ## 开发
