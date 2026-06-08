@@ -1,7 +1,7 @@
 {
   "name": "hubstack",
   "version": "0.1.0",
-  "description": "Homepage dashboard with kanban, todo, heatmap, and epub bookshelf",
+  "description": "Hubstack is an Obsidian homepage dashboard for tasks, activity, reading, links, countdowns, and EPUB books",
   "main": "main.js",
   "scripts": {
     "dev": "node esbuild.config.mjs",

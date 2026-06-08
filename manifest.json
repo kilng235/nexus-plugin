@@ -3,7 +3,7 @@
   "name": "Hubstack",
   "version": "0.1.0",
   "minAppVersion": "0.15.0",
-  "description": "Homepage dashboard — kanban, todo, heatmap, and epub bookshelf in one draggable grid.",
+  "description": "Hubstack is an Obsidian homepage dashboard for tasks, activity, reading, links, countdowns, and EPUB books.",
   "author": "Juno",
   "isDesktopOnly": false
 }
